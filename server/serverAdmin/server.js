@@ -14,7 +14,7 @@ const port = 5000;
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "160721Gj5140#",
+    password: "HappyLama#",
     database: "rentirate"
 });
 
@@ -24,7 +24,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Internal Server Error' });
 });
 
-app.post('/add_user', (req, res) => {
+app.post('/add_admin', (req, res) => {
     const sql = "INSERT INTO admins (`id`, `name`, `surname`, `email`,`phone`, `address`) VALUES (?, ?, ?, ?, ?)";
     const values = [
         req.body.id,
@@ -32,7 +32,7 @@ app.post('/add_user', (req, res) => {
         req.body.surname,
         req.body.email,
         req.body.phone,
-        req.body.adress
+        req.body.address
     ];
     db.query(sql, values, (err, result) => {
         if (err) {

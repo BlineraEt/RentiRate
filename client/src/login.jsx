@@ -30,7 +30,22 @@ const Login = () => {
         console.log('Login logic for', values.status);
       }
     },
+
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      if (values.status === 'seller') {
+        setRedirectToHome(true);
+      } else {
+        console.log('Login logic for', values.status);
+      }
+    },
+ 
+   
+  
+
   });
+
+  
 
   if (redirectToHome) {
     return <Navigate to="/" />;

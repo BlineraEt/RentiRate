@@ -34,7 +34,7 @@ function HomeAdmin() {
         <div className="blueGreenBackground">
             <h3 className="custom-color">Your Admins</h3>
             <div className="d-flex justify-content-between w-100 mb-3">
-                <Link className='btn btn-success createButton' to='/createAdmin'>Add Admin+</Link>
+                <Link className='btn btn-success createButton' to='/CreateAdmin'>Add Admin+</Link>
             </div>
             <div className="table-wrapper"> 
                 <div className="table-border"> 

@@ -18,7 +18,7 @@ function ReadAdmin() {
     return (
         <div className="container-fluid vw-100 vh-100 bg-primary">
             <h1>Admin {id}</h1>
-            <Link to="/" className="btn btn-success">Back</Link>
+            <Link to="/HomeAdmin" className="btn btn-success">Back</Link>
             {data.map((admin) =>{
                 return (
                     <ul className="list-group">

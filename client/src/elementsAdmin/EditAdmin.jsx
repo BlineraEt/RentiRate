@@ -23,7 +23,7 @@ function EditAdmin() {
         axios.post(`/edit_admin/${id}`, data[0])
         .then((res)=>{
             
-            navigate('/')
+            navigate('/HomeAdmin')
             console.log(res)
         })
         .catch((err)=>console.log(err))
@@ -31,8 +31,8 @@ function EditAdmin() {
 
     return (
         <div className="container-fluid vw-100 vh-100 bg-primary">
-            <h1>User {id}</h1>
-            <Link to="/" className="btn btn-success">Back</Link>
+            <h1>Admin {id}</h1>
+            <Link to="/HomeAdmin" className="btn btn-success">Back</Link>
             {data.map((admin) =>{
                 return (
                     <form onSubmit={handleSubmit}>
