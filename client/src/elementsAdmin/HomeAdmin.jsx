@@ -62,8 +62,8 @@ function HomeAdmin() {
                                             <td>{admin.phone}</td>
                                             <td>{admin.address}</td>
                                             <td className="d-flex justify-content-center">
-                                                <Link className="btn btn-success marginRight readButton" to={`/read/${admin.id}`}>Read</Link>
-                                                <Link className="btn btn-primary marginRight editButton" to={`/edit/${admin.id}`}>Edit</Link>
+                                                <Link className="btn btn-success marginRight readButton" to={`/readAdmin/${admin.id}`}>Read</Link>
+                                                <Link className="btn btn-primary marginRight editButton" to={`/editAdmin/${admin.id}`}>Edit</Link>
                                                 <button onClick={() => handleDelete(admin.id)} className="btn btn-danger deleteButton">Delete</button>
                                             </td>
                                         </tr>

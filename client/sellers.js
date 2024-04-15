@@ -1,8 +1,6 @@
-// Import Sequelize and database connection
 const { DataTypes } = require('sequelize');
-const sequelize = require('./database'); // assuming database.js contains the sequelize instance
+const sequelize = require('./database');
 
-// Define the Seller model
 const Seller = sequelize.define('Seller', {
   id: {
     type: DataTypes.INTEGER,
@@ -31,9 +29,8 @@ const Seller = sequelize.define('Seller', {
     allowNull: false
   }
 }, {
-  tableName: 'sellers', // Specify the table name
-  timestamps: false // Disable timestamps
+  tableName: 'sellers',
+  timestamps: false
 });
 
-// Export the Seller model
 module.exports = Seller;

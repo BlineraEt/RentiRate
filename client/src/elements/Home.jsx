@@ -35,7 +35,7 @@ function Home() {
 
     return (
         <div className="blueGreenBackground">
-            <h3 className="custom-color">Sellers GIT HUB</h3>
+            <h3 className="custom-color">Sellers</h3>
             <div className="divCreate">
                 <Link className='btn btn-success createButton' to='/create'>Create+</Link>
             </div>

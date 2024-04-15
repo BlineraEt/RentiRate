@@ -14,11 +14,14 @@ const port = 5000;
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
+<<<<<<< Updated upstream
     password: "HappyLama#",
+=======
+    password: "HappyLama1",
+>>>>>>> Stashed changes
     database: "rentirate"
 });
 
-// Add error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err);
     res.status(500).json({ message: 'Internal Server Error' });

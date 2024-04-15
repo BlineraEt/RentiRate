@@ -15,9 +15,13 @@ const validationSchema = Yup.object().shape({
 
 function CreateAdmin() {
     const navigate = useNavigate();
+<<<<<<< Updated upstream
     const [errorMessage, setErrorMessage] = useState('');
         
         const initialValues = {
+=======
+    const [formData, setFormData] = useState({
+>>>>>>> Stashed changes
         id: '',
         name: '',
         surname: '',
@@ -40,6 +44,7 @@ function CreateAdmin() {
 
     
 
+<<<<<<< Updated upstream
     function handleSubmit(values, { setSubmitting }) {
         axios.post('/add_user', values)
              .then((res) => {
@@ -106,6 +111,14 @@ function CreateAdmin() {
                             </Form>
                         )}
                     </Formik>
+=======
+    return (
+        <div className='createBackground'>
+            <div className='container'>
+                <h3 className='addAdmin'>Add Admin</h3>
+                <div className='homeButton'>
+                    <Link to='/homeAdmin' className='btn btn-success createButton marginRight'>Home</Link>
+>>>>>>> Stashed changes
                 </div>
             </div>
         )

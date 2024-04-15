@@ -18,7 +18,11 @@ function ReadAdmin() {
     return (
         <div className="container-fluid vw-100 vh-100 bg-primary">
             <h1>Admin {id}</h1>
+<<<<<<< Updated upstream
             <Link to="/HomeAdmin" className="btn btn-success">Back</Link>
+=======
+            <Link to="/homeAdmin" className="btn btn-success">Back</Link>
+>>>>>>> Stashed changes
             {data.map((admin) =>{
                 return (
                     <ul className="list-group">
