@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {Link, useNavigate} from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -7,13 +7,15 @@ import * as Yup from 'yup';
 function Create(){
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
+    const [genders, setGenders] = useState([]);
 
     const initialValues = {
         name: '',
         surname: '',
         email: '',
         age: '',
-        gender: ''
+        gender: '',
+        gender_id: ''
     };
 
     const validationSchema = Yup.object().shape({
@@ -22,10 +24,23 @@ function Create(){
         email: Yup.string().email('Invalid email').required('Email is required!'),
         age: Yup.number().positive('Age must be a positive number').required('Age is required!'),
         gender: Yup.string().required('Gender is required!'),
-    })
+    });    
 
+    useEffect(() => {
+        axios.get('/genders')
+             .then((res) => {
+                setGenders(res.data);
+                console.log("Genders: ", res.data);
+             })
+             .catch((err) => console.log(err));
+    }, []);
+    
     function handleSubmit(values, { setSubmitting }) {
-        axios.post('/add_user', values)
+        const selectedGender = genders.find(gender => gender.gender === values.gender);
+
+        const updatedValues = { ...values, gender_id: selectedGender.id };
+
+        axios.post('/add_user', updatedValues)
              .then((res) => {
                 if(res.data.error){
                     setErrorMessage(res.data.error);
@@ -36,7 +51,7 @@ function Create(){
              .catch((err) => console.log(err))
              .finally(() => {
                 setSubmitting(false);
-             })
+             });
     }
 
     //function handleSubmit(values, {setSubmitting}) {
@@ -92,11 +107,11 @@ function Create(){
                             </div>
                             <div className='details'>
                                 <label htmlFor="gender">Gender:</label>
-                                <Field as = "select" name = 'gender'>
+                                <Field as="select" name="gender">
                                     <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
+                                    {genders.map((gender) => (
+                                        <option key={gender.id} value={gender.gender}>{gender.gender}</option>
+                                    ))}
                                 </Field>
                                 <ErrorMessage name="gender" component="div" className="error" />
                             </div>

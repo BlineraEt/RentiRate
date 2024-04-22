@@ -14,11 +14,7 @@ const port = 5000;
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-<<<<<<< Updated upstream
-    password: "HappyLama#",
-=======
     password: "HappyLama1",
->>>>>>> Stashed changes
     database: "rentirate"
 });
 

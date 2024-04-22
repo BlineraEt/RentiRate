@@ -31,13 +31,8 @@ function EditAdmin() {
 
     return (
         <div className="container-fluid vw-100 vh-100 bg-primary">
-<<<<<<< Updated upstream
             <h1>Admin {id}</h1>
             <Link to="/HomeAdmin" className="btn btn-success">Back</Link>
-=======
-            <h1>User {id}</h1>
-            <Link to="/homeAdmin" className="btn btn-success">Back</Link>
->>>>>>> Stashed changes
             {data.map((admin) =>{
                 return (
                     <form onSubmit={handleSubmit}>

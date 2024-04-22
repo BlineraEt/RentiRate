@@ -19,36 +19,77 @@ const db = mysql.createConnection({
     database: "rentirate"
 })
 
-app.post('/add_user', (req, res) => {
+app.get('/genders', (req, res) => {
+    const sqlFetchGenders = "SELECT * FROM genders";
+
+    db.query(sqlFetchGenders, (err, results) => {
+        if (err) {
+            console.error('Error fetching genders:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        return res.json(results);
+    })
+})
+
+app.post('/add_user', async (req, res) => {
     const { name, surname, email, age, gender } = req.body;
 
-    const sqlCheckExistence = "SELECT COUNT(*) AS count FROM sellers WHERE name = ? AND surname = ? AND email = ?";
-    const values = [name, surname, email];
+    try {
+        const [existingGender] = await db.query("SELECT id FROM genders WHERE gender = ?", [gender]);
 
-    db.query(sqlCheckExistence, values, (err, result) => {
-        if (err) return res.json({ message: 'Error checking seller existence: ' + err });
+        let genderId;
 
-        const sellerCount = result[0].count;
-
-        if (sellerCount > 0) {
-            return res.json({ error: 'Seller already exists!' });
+        if (existingGender && existingGender.id) {
+            genderId = existingGender.id;
         } else {
-            const sqlInsert = "INSERT INTO sellers (name, surname, email, age, gender) VALUES (?, ?, ?, ?, ?)";
-            const insertValues = [name, surname, email, age, gender];
-
-            db.query(sqlInsert, insertValues, (err, result) => {
-                if (err) return res.json({ message: 'Error adding seller: ' + err });
-
-                const sqlResetAutoIncrement = "ALTER TABLE sellers AUTO_INCREMENT = 1";
-                db.query(sqlResetAutoIncrement, (err, result) => {
-                    if (err) return res.json({ message: 'Error resetting ID: ' + err });
-
-                    return res.json({ success: 'User added successfully!', id: result.insertId });
-                });
-            });
+            const [insertedGenderResult] = await db.query("INSERT INTO genders (gender) VALUES (?)", [gender]);
+            genderId = insertedGenderResult.insertId;
         }
-    });
-});
+
+        const [insertedUserResult] = await db.query("INSERT INTO sellers (name, surname, email, age, gender_id) VALUES (?, ?, ?, ?, ?)", [name, surname, email, age, genderId]);
+
+        return res.json({ success: 'User added successfully!', id: insertedUserResult.insertId });
+    } catch (error) {
+        console.error('Error adding user:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+
+//app.post('/add_user', (req, res) => {
+//    const { name, surname, email, age, gender } = req.body;
+//
+//    const sqlCheckGender = "SELECT id FROM genders WHERE gender = ?";
+//    db.query(sqlCheckGender, [gender], (err, genderResult) => {
+//        if(err) return res.json({message: 'Error checking gender existence: ' + err });
+//
+//        let genderId;
+//
+//        if (genderResult.length > 0) {
+//            genderId = genderResult[0].id;
+//            insetSeller(name, surname, email, age, genderId);
+//        } else {
+//            const sqlInsertGender = "INSERT INTO genders (gender) VALUES (?)";
+//            db.query(sqlInsertGender, [gender], (err, insertResult) => {
+//                if(err) return res.json({message: 'Error adding gender: ' + err});
+//
+//                genderId = insertResult.insertId;
+//                insertSeller(name, surname, email, age, genderId);
+//            })
+//        }
+//    })
+//
+//    function insertSeller(name, surname, email, age, genderId){
+//        const sqlInsertSeller = "INSERT INTO sellers (name, surname, email, age, gender_id) VALUES (?, ?, ?, ?, ?)";
+//        const insertValues = [name, surname, email, age, genderId];
+//
+//        db.query(sqlInsertSeller, insertValues, (err, result) => {
+//            if(err) return res.json({ message: 'Error adding seller: ' + err});
+//
+//            return res.json({success: 'User added successfully!', id: result.insertId});
+//        })
+//    }
+//})
 
 app.get("/rentirate", (req, res) => {
     const sql = "SELECT * FROM sellers";
