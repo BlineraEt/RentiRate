@@ -6,6 +6,7 @@ import * as Yup from "yup";
 
 function Edit() {
     const [seller, setSeller] = useState(null);
+    const [genders, setGenders] = useState([]);
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -16,6 +17,13 @@ function Edit() {
                 setSeller(res.data[0]);
             })
             .catch((err) => console.log(err));
+
+        axios
+            .get('/genders')
+            .then((res) => {
+                setGenders(res.data);
+            })
+            .catch((err) => console.error(err));
     }, [id]);
 
     const validationSchema = Yup.object().shape({
@@ -23,7 +31,7 @@ function Edit() {
         surname: Yup.string().required("Surname is required!"),
         email: Yup.string().email("Invalid email").required("Email is required!"),
         age: Yup.number().positive("Age must be a positive number").required("Age is required!"),
-        gender: Yup.string().required("Gender is required!"),
+        gender_id: Yup.string().required("Gender ID is required!"),
     });
 
     function handleSubmit(values, { setSubmitting }) {
@@ -50,12 +58,13 @@ function Edit() {
                             surname: seller.surname || '',
                             email: seller.email || '',
                             age: seller.age || '',
+                            gender_id: seller.gender_id || '',
                             gender: seller.gender || '',
                         }}
                         validationSchema={validationSchema}
                         onSubmit={handleSubmit}
                     >
-                        {({ isSubmitting }) => (
+                        {({ isSubmitting, setFieldValue }) => (
                             <Form>
                                 <div className="editDetails">
                                     <label htmlFor="name">Name:</label>
@@ -78,14 +87,17 @@ function Edit() {
                                     <ErrorMessage name="age" component="div" className="error" />
                                 </div>
                                 <div className="editDetails">
-                                    <label htmlFor="gender">Gender:</label>
-                                    <Field as="select" name="gender">
+                                    <label htmlFor="gender_id">Gender:</label>
+                                    <Field as="select" name="gender_id" onChange={(e) => {
+                                        setFieldValue('gender_id', e.target.value);
+                                        setFieldValue('gender', e.target.options[e.target.selectedIndex].text);
+                                    }}>
                                         <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
+                                        {genders.map((gender) => (
+                                            <option key={gender.id} value={gender.id}>{gender.gender}</option>
+                                        ))}
                                     </Field>
-                                    <ErrorMessage name="gender" component="div" className="error" />
+                                    <ErrorMessage name="gender_id" component="div" className="error" />
                                 </div>
                                 <div className="form-group my-3">
                                     <button type="submit" className="btn btn-success editButton editSaveButton" disabled={isSubmitting}>Save</button>
@@ -96,7 +108,7 @@ function Edit() {
                 )}
             </div>
         </div>
-    );
+    )
 }
 
 export default Edit;

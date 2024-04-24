@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
@@ -8,7 +8,8 @@ function Create(){
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
     const [genders, setGenders] = useState([]);
-
+    const [existingSellers, setExistingSellers] = useState([]);
+    
     const initialValues = {
         name: '',
         surname: '',
@@ -28,31 +29,54 @@ function Create(){
 
     useEffect(() => {
         axios.get('/genders')
-             .then((res) => {
+            .then((res) => {
                 setGenders(res.data);
-                console.log("Genders: ", res.data);
-             })
-             .catch((err) => console.log(err));
+            })
+            .catch((err) => console.error(err));
+        
+        axios.get('/rentirate')
+            .then((res) => {
+                setExistingSellers(res.data);
+            })
+            .catch((err) => console.error(err));
     }, []);
     
     function handleSubmit(values, { setSubmitting }) {
         const selectedGender = genders.find(gender => gender.gender === values.gender);
 
+        if (!selectedGender) {
+            setErrorMessage('Please select a valid gender.');
+            setSubmitting(false);
+            return;
+        }
+
+        const existingSeller = existingSellers.find(seller =>
+            seller.name === values.name &&
+            seller.surname === values.surname &&
+            seller.email === values.email
+        );
+
+        if (existingSeller) {
+            setErrorMessage('This seller already exists!');
+            setSubmitting(false);
+            return;
+        }
+
         const updatedValues = { ...values, gender_id: selectedGender.id };
 
         axios.post('/add_user', updatedValues)
-             .then((res) => {
-                if(res.data.error){
+            .then((res) => {
+                if (res.data.error) {
                     setErrorMessage(res.data.error);
-                } else{
+                } else {
                     navigate('/');
                 }
-             })
-             .catch((err) => console.log(err))
-             .finally(() => {
+            })
+            .catch((err) => console.error(err))
+            .finally(() => {
                 setSubmitting(false);
-             });
-    }
+            });
+    }            
 
     //function handleSubmit(values, {setSubmitting}) {
     //    axios.post('/add_user', values)
@@ -69,15 +93,15 @@ function Create(){
     return (
         <div className='createBackground'>
             <div className='container'>
-                <h3 className='addSeller'>Add Seller</h3>
+                <h2 className='addSeller'>Add Seller</h2>
                 <div className='homeButton'>
-                    <Link to = '/' class = 'btn btn-success createButton marginRight'>Home</Link>
+                    <Link to='/' className='btn btn-success createButton marginRight'>Home</Link>
                 </div>
-                {errorMessage && (
-                    <div className='alert alert-danger' role="alert">
-                        {errorMessage}
-                    </div>
-                )}
+            {errorMessage && (
+                <div className='alert alert-danger' role="alert">
+                    {errorMessage}
+                </div>
+            )}
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}

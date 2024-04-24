@@ -19,34 +19,11 @@ const db = mysql.createConnection({
     database: "rentirate"
 })
 
-app.get('/genders', (req, res) => {
-    const sqlFetchGenders = "SELECT * FROM genders";
-
-    db.query(sqlFetchGenders, (err, results) => {
-        if (err) {
-            console.error('Error fetching genders:', err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-        return res.json(results);
-    })
-})
-
 app.post('/add_user', async (req, res) => {
-    const { name, surname, email, age, gender } = req.body;
+    const { name, surname, email, age, gender_id, gender } = req.body;
 
     try {
-        const [existingGender] = await db.query("SELECT id FROM genders WHERE gender = ?", [gender]);
-
-        let genderId;
-
-        if (existingGender && existingGender.id) {
-            genderId = existingGender.id;
-        } else {
-            const [insertedGenderResult] = await db.query("INSERT INTO genders (gender) VALUES (?)", [gender]);
-            genderId = insertedGenderResult.insertId;
-        }
-
-        const [insertedUserResult] = await db.query("INSERT INTO sellers (name, surname, email, age, gender_id) VALUES (?, ?, ?, ?, ?)", [name, surname, email, age, genderId]);
+        const insertedUserResult = await db.query("INSERT INTO sellers (name, surname, email, age, gender_id, gender) VALUES (?, ?, ?, ?, ?, ?)", [name, surname, email, age, gender_id, gender]);
 
         return res.json({ success: 'User added successfully!', id: insertedUserResult.insertId });
     } catch (error) {
@@ -54,42 +31,6 @@ app.post('/add_user', async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 })
-
-
-//app.post('/add_user', (req, res) => {
-//    const { name, surname, email, age, gender } = req.body;
-//
-//    const sqlCheckGender = "SELECT id FROM genders WHERE gender = ?";
-//    db.query(sqlCheckGender, [gender], (err, genderResult) => {
-//        if(err) return res.json({message: 'Error checking gender existence: ' + err });
-//
-//        let genderId;
-//
-//        if (genderResult.length > 0) {
-//            genderId = genderResult[0].id;
-//            insetSeller(name, surname, email, age, genderId);
-//        } else {
-//            const sqlInsertGender = "INSERT INTO genders (gender) VALUES (?)";
-//            db.query(sqlInsertGender, [gender], (err, insertResult) => {
-//                if(err) return res.json({message: 'Error adding gender: ' + err});
-//
-//                genderId = insertResult.insertId;
-//                insertSeller(name, surname, email, age, genderId);
-//            })
-//        }
-//    })
-//
-//    function insertSeller(name, surname, email, age, genderId){
-//        const sqlInsertSeller = "INSERT INTO sellers (name, surname, email, age, gender_id) VALUES (?, ?, ?, ?, ?)";
-//        const insertValues = [name, surname, email, age, genderId];
-//
-//        db.query(sqlInsertSeller, insertValues, (err, result) => {
-//            if(err) return res.json({ message: 'Error adding seller: ' + err});
-//
-//            return res.json({success: 'User added successfully!', id: result.insertId});
-//        })
-//    }
-//})
 
 app.get("/rentirate", (req, res) => {
     const sql = "SELECT * FROM sellers";
@@ -110,17 +51,12 @@ app.get("/get_seller/:id", (req, res) => {
 
 app.post('/edit_user/:id', (req, res)=>{
     const id = req.params.id;
-    sql = "UPDATE sellers SET `name` = ?, `surname` = ? , `email` = ?, `age` = ?, `gender` = ? WHERE id = ?";
-    const values = [
-        req.body.name,
-        req.body.surname,
-        req.body.email,
-        req.body.age,
-        req.body.gender,
-        id
-    ]
+    const { name, surname, email, age, gender_id, gender } = req.body;
+    const sql = "UPDATE sellers SET `name` = ?, `surname` = ?, `email` = ?, `age` = ?, `gender_id` = ?, `gender` = ? WHERE id = ?";
+    const values = [name, surname, email, age, gender_id, gender, id];
+
     db.query(sql, values, (err, result)=>{
-        if(err) return res.json({message: 'Something unexpected has occured' + err})
+        if(err) return res.json({message: 'Something unexpected has occurred: ' + err})
         return res.json({success: "Seller updated successfully"})
     })
 })
@@ -149,6 +85,57 @@ app.delete('/delete/:id', (req, res) => {
     });
 });
 
+app.get('/genders', (req, res) => {
+    const sqlFetchGenders = "SELECT * FROM genders";
+
+    db.query(sqlFetchGenders, (err, results) => {
+        if (err) {
+            console.error('Error fetching genders:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        return res.json(results);
+    })
+})
+
+app.post('/add_gender', async (req, res) => {
+    const { gender } = req.body;
+
+    try {
+        const result = await db.query("INSERT INTO genders (gender) VALUES (?)", [gender]);
+        const insertedGenderId = result.insertId;
+        return res.json({ success: 'Gender added successfully!', id: insertedGenderId });
+    } catch (error) {
+        console.error('Error adding gender:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+app.put('/edit_gender/:id', (req, res) => {
+    const id = req.params.id;
+    const { gender } = req.body;
+    const sql = "UPDATE genders SET gender = ? WHERE id = ?";
+
+    db.query(sql, [gender, id], (err, result) => {
+        if (err) {
+            console.error('Error updating gender:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        return res.json({ success: 'Gender updated successfully' });
+    })
+})
+
+app.delete('/delete_gender/:id', (req, res) => {
+    const id = req.params.id;
+    const sqlDelete = "DELETE FROM genders WHERE id = ?";
+
+    db.query(sqlDelete, [id], (err, result) => {
+        if (err) {
+            console.error('Error deleting gender:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        return res.json({ success: 'Gender deleted successfully' });
+    })
+})
 
 app.listen(port, ()=>{
     console.log('listening')

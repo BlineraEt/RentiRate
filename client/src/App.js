@@ -6,10 +6,10 @@ import Create from './elements/Create';
 import Edit from './elements/Edit';
 import Read from './elements/Read';
 import Login from './login';
-import HomeAdmin from './elementsAdmin/HomeAdmin';
-import CreateAdmin from './elementsAdmin/CreateAdmin';
-import EditAdmin from './elementsAdmin/EditAdmin';
-import ReadAdmin from './elementsAdmin/ReadAdmin';
+import HomeGender from './elementsGender/HomeGender';
+import CreateGender from './elementsGender/CreateGender';
+import EditGender from './elementsGender/EditGender';
+import ReadGender from './elementsGender/ReadGender';
 
 
 
@@ -22,10 +22,10 @@ function App() {
         <Route path='/create' element = {<Create />} />
         <Route path='/edit/:id' element = {<Edit />} />
         <Route path='/read/:id' element = {<Read />} />
-        <Route path='/homeAdmin' element = {<HomeAdmin />} />
-        <Route path='/createAdmin' element = {<CreateAdmin />} />
-        <Route path='/editAdmin/:id' element = {<EditAdmin />} />
-        <Route path='/readAdmin/:id' element = {<ReadAdmin />} />
+        <Route path='/homeGender' element = {<HomeGender />} />
+        <Route path='/createGender' element = {<CreateGender />} />
+        <Route path='/editGender/:id' element = {<EditGender />} />
+        <Route path='/readGender/:id' element = {<ReadGender />} />
 
       </Routes>
     </BrowserRouter>
